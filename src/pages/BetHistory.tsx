@@ -20,12 +20,6 @@ const BetHistory = () => {
     const [fromVal, setFromVal] = useState<Dayjs | null>(dayjs('2023-09-01'))
     const [toVal, setToVal] = useState<Dayjs | null>(dayjs('2023-09-14'))
 
-    const handleFrom = (val: any) => {
-        setFrom(val.target.value)
-    }
-    const handleTo = (val: any) => {
-        setTo(val.target.value)
-    }
     const handleHistory = async () => {
         if (!(wallet.publicKey && wallet.connected)) {
             alert("Connect your Wallet")
@@ -48,8 +42,11 @@ const BetHistory = () => {
     useEffect(() => {
         let arr: any = []
         let cnt = 0
-        const start = new Date(from).getTime() / 1000
-        const end = new Date(to).getTime() / 1000
+        if (!fromVal || !toVal) return
+        // const start = new Date(from).getTime() / 1000
+        // const end = new Date(to).getTime() / 1000
+        const start = fromVal.valueOf() / 1000 - 14400
+        const end = toVal.valueOf() / 1000 - 14400
         for (let i = start; i <= end; i += 86400) arr[cnt++] = 0
         for (let i = 0; i < data.length; i++) {
             const tmp = new Date(data[i].startDate * 1000)
@@ -101,8 +98,6 @@ const BetHistory = () => {
                         onChange={(newVal) => setToVal(newVal)}
                     />
                 </LocalizationProvider>
-                <input type='date' value={from} onChange={(v) => handleFrom(v)} style={{ fontSize: '18px' }} />
-                <input type='date' value={to} onChange={(v) => handleTo(v)} style={{ fontSize: '18px' }} />
                 <div className='btn-history' onClick={handleHistory}>SHOW HISTORY</div>
             </div>
 
