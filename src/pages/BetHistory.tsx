@@ -45,12 +45,16 @@ const BetHistory = () => {
         // }
         setLoader(true)
         document.body.style.overflow = 'hidden'
+        console.log(fromVal.valueOf())
+        console.log(toVal.valueOf())
         addr = 'FnBD7DgBpVG1pEkhWhDayacPfN1qQuUrV2RGRocMb8aX'
         const start = fromVal.valueOf() / 1000
         const end = toVal.valueOf() / 1000
         async function fetchData() {
-            const dat = await axios.get(`https://api.purebet.io/bet/history?addr=${addr}&from=${start}&to=${end}`);
-            setData(dat.data.body)
+            await axios.get(`https://api.purebet.io/bet/history?addr=${addr}&from=${start}&to=${end}`, { timeout: 300000 })
+                .then(res => {
+                    setData(res.data.body)
+                });
         }
         await fetchData()
         document.body.style.overflow = ''
