@@ -4,8 +4,25 @@
 
 .header {
     display: flex;
+    flex-direction: row;
     gap: 10px;
     padding-bottom: 10px;
+}
+
+@media screen and (max-width: 576px) {
+    .header {
+        display: grid;
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        width: 200px;
+    }
+}
+
+@media screen and (max-width: 1100px) and (min-width: 576px) {
+    .header {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        width: 400px;
+    }
 }
 
 .btn-history {
@@ -13,6 +30,7 @@
     padding: 18px 30px 10px 30px;
     border-radius: 5px;
     cursor: pointer;
+    height: 30px;
 }
 
 .mytable {

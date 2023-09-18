@@ -60,6 +60,7 @@ const BetHistory = () => {
         document.body.style.overflow = ''
         setLoader(false)
     }
+    console.log(data)
     useEffect(() => {
         let arr: any = []
         let cnt = 0
@@ -109,7 +110,7 @@ const BetHistory = () => {
                         />
                         <DatePicker
                             sx={{
-                                '*': { color: 'white' },
+                                '*': { color: 'white !important' },
                                 '.MuiOutlinedInput-root': { border: 'solid 1px gray' },
                                 '.Mui-focused': { border: 'none', color: '#24acff !important' },
                                 '.MuiInputLabel-root': { bgcolor: 'black', color: 'white' },
