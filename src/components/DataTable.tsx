@@ -48,11 +48,11 @@ const DataTable = (props: any) => {
                 columns={columns}
                 initialState={{
                     pagination: {
-                        paginationModel: { page: 0, pageSize: 8 },
+                        paginationModel: { page: 0, pageSize: 10 },
                     },
                 }}
                 style={{ color: 'white' }}
-                pageSizeOptions={[8, 10]}
+                pageSizeOptions={[5, 10]}
             />
 
         </div>

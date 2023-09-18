@@ -9,5 +9,53 @@
 .navbar-body {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 20px;
+}
+
+@media screen and (min-width: 1200px) {
+    .menu1 {
+        display: flex;
+        gap: 20px;
+    }
+
+    .menu2 {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .menu1 {
+        display: none;
+    }
+
+    .menu2 {
+        display: block;
+    }
+}
+
+.resMenu {
+    position: absolute;
+    margin-top: 14px;
+    margin-right: 16px;
+    border-radius: 10px;
+    text-align: left;
+    right: 0px;
+    background-color: #334955;
+    z-index: 5;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.resMenu div {
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.resMenu div:hover {
+    background-color: gray;
+    border-radius: 10px;
 }
