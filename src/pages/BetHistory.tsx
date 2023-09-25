@@ -33,21 +33,20 @@ const BetHistory = () => {
             alert("Input Correct Date Range")
             return
         }
-        //const addr = wallet.publicKey.toString()
         let addr: any;
-        // if (wallet.publicKey && wallet.connected) addr = wallet.publicKey.toString()
-        // else {
-        //     if (add.length != 44) {
-        //         alert("Input Correct Address or Connect your Wallet")
-        //         return
-        //     }
-        //     addr = addr
-        // }
+        if (wallet.publicKey && wallet.connected) addr = wallet.publicKey.toString()
+        else {
+            if (add.length != 44) {
+                alert("Input Correct Address or Connect your Wallet")
+                return
+            }
+            addr = add
+        }
         setLoader(true)
         document.body.style.overflow = 'hidden'
         console.log(fromVal.valueOf())
         console.log(toVal.valueOf())
-        addr = 'FnBD7DgBpVG1pEkhWhDayacPfN1qQuUrV2RGRocMb8aX'
+        // addr = 'FnBD7DgBpVG1pEkhWhDayacPfN1qQuUrV2RGRocMb8aX'
         const start = fromVal.valueOf() / 1000
         const end = toVal.valueOf() / 1000
         async function fetchData() {
