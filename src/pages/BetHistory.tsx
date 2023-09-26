@@ -69,7 +69,7 @@ const BetHistory = () => {
         for (let i = 0; i < data.length; i++) {
             const tmp = new Date(data[i].startDate * 1000)
             const date = new Date(tmp.getFullYear() + '-' + ("0" + (tmp.getMonth() + 1)).slice(-2) + '-' + ("0" + (tmp.getDate() + 1)).slice(-2))
-            const ind = (date.getTime() / 1000 - start - 61200) / 86400
+            const ind = (date.getTime() / 1000 - start) / 86400
             console.log(tmp, date, ind)
             if (data[i].result == "loss") arr[ind - 1] += data[i].profitloss
             else {
