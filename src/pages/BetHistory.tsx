@@ -11,13 +11,18 @@ import { FadeLoader } from 'react-spinners'
 import './BetHistory.css'
 import DataTable from '../components/DataTable'
 import LineChart from '../components/LineChart';
+import BarChart1 from '../components/BarChart1';
+import BarChart2 from '../components/BarChart2';
 
 const BetHistory = () => {
     const wallet = useWallet()
     const [data, setData] = useState<any>([])
     const [chartData, setChartData] = useState<any>([])
+    const [leagueData, setLeagueData] = useState<any>([])
+    const [oddsData, setOddsData] = useState<any>([])
+    const [oddsInter, setOddsInter] = useState(0.0)
     const [fromVal, setFromVal] = useState<Dayjs | null>(dayjs('2023-09-01'))
-    const [toVal, setToVal] = useState<Dayjs | null>(dayjs('2023-09-14'))
+    const [toVal, setToVal] = useState<Dayjs | null>(dayjs('2023-09-26'))
     const [add, setAdd] = useState('')
     const [loader, setLoader] = useState(false)
 
@@ -47,8 +52,9 @@ const BetHistory = () => {
         // addr = 'FnBD7DgBpVG1pEkhWhDayacPfN1qQuUrV2RGRocMb8aX'
         const start = fromVal.valueOf() / 1000
         const end = toVal.valueOf() / 1000
+        console.log(start, end)
         async function fetchData() {
-            await axios.get(`https://api.purebet.io/bet/history?addr=${addr}&from=${start}&to=${end}`, { timeout: 300000 })
+            await axios.get(`https://api.purebet.io/bet/history?addr=${addr}&from=${start}&to=${end}`)
                 .then(res => {
                     setData(res.data.body)
                 });
@@ -58,36 +64,67 @@ const BetHistory = () => {
         setLoader(false)
     }
     useEffect(() => {
+        console.log(data)
         let arr: any = []
         let cnt = 0
         if (!fromVal || !toVal) return
         // const start = new Date(from).getTime() / 1000
         // const end = new Date(to).getTime() / 1000
-        const ts = new Date(fromVal.year() + '-' + ("0" + (fromVal.month() + 1)).slice(-2) + '-' + ("0" + (fromVal.date() + 1)).slice(-2))
-        const start = ts.getTime() / 1000
-        const te = new Date(toVal.year() + '-' + ("0" + (toVal.month() + 1)).slice(-2) + '-' + ("0" + (toVal.date() + 1)).slice(-2))
-        const end = te.getTime() / 1000
-        console.log(fromVal, toVal)
+        const start = fromVal.valueOf() / 1000
+        const end = toVal.valueOf() / 1000
+        let minOdds = 999999, maxOdds = -999999;
+        let leagueChart: any = []
         for (let i = start; i <= end; i += 86400) arr[cnt++] = 0
         for (let i = 0; i < data.length; i++) {
             const tmp = new Date(data[i].startDate * 1000)
             const date = new Date(tmp.getFullYear() + '-' + ("0" + (tmp.getMonth() + 1)).slice(-2) + '-' + ("0" + (tmp.getDate() + 1)).slice(-2))
-            const ind = ((date.getTime() / 1000 - start) / 86400) + 1
+            const ind = (date.getTime() / 1000 - start - 61200) / 86400
             if (data[i].result == "loss") arr[ind - 1] += data[i].profitloss
             else {
                 const pro = data[i].profitloss.toString()
                 arr[ind - 1] += parseFloat(pro.slice(1))
             }
+            if (data[i].league != undefined) {
+                let j = 0, flag = 0;
+                for (; j < leagueChart.length; j++)
+                    if (leagueChart[j].league == data[i].league) break;
+                if (j == leagueChart.length) {
+                    leagueChart.push({ "league": data[i].league, "value": 1 })
+                } else {
+                    leagueChart[j].value += 1;
+                }
+            }
+            if (minOdds > data[i].odds) minOdds = data[i].odds
+            if (maxOdds < data[i].odds) maxOdds = data[i].odds
         }
         for (let i = 1; i < cnt; i++) {
             arr[i] = arr[i] + arr[i - 1]
         }
         const tmpChart = []
         for (let i = 0; i < cnt; i++) {
-            const tmp = new Date((start + 86400 * (i)) * 1000)
+            const tmp = new Date((start + 86400 * (i + 1)) * 1000)
             const date = tmp.getFullYear() + '-' + ("0" + (tmp.getMonth() + 1)).slice(-2) + '-' + ("0" + tmp.getDate()).slice(-2)
             tmpChart.push({ "date": date, "value": arr[i] })
         }
+        let oddsChart: any = [];
+
+        {
+            const st = Math.trunc(minOdds), en = Math.trunc(maxOdds) + 1
+            const interval = (en - st) / 4.0
+            for (let i = st; i < en; i += interval) oddsChart.push({ "odd": i.toFixed(2), "won": 0, "lost": 0 })
+            for (let i = 0; i < data.length; i++) {
+                const index = Math.floor((data[i].odds - st) / interval)
+                console.log(st, en, index, data[i])
+                if (data[i].result == "loss") oddsChart[index].lost -= data[i].profitloss
+                else if (data[i].result == "win") {
+                    const pro = data[i].profitloss.toString()
+                    oddsChart[index].won += parseFloat(pro.slice(1))
+                }
+            }
+            setOddsInter(interval)
+        }
+        setOddsData(oddsChart)
+        setLeagueData(leagueChart)
         setChartData(tmpChart)
     }, [data, setChartData])
     return (
@@ -130,6 +167,19 @@ const BetHistory = () => {
                 </div>
                 <DataTable data={data} />
                 <LineChart data={chartData} />
+                <div style={{ display: 'flex' }}>
+                    {
+                        leagueData.length > 0
+                            ? <BarChart1 data={leagueData} />
+                            : <div style={{ width: '50%', height: '500px', fontSize: '24px', background: 'white', display: 'flex', placeItems: 'center', justifyContent: 'center' }}>There is no data for leagues</div>
+                    }
+                    {
+                        leagueData.length > 0
+                            ?
+                            <BarChart2 data={oddsData} interval={oddsInter} />
+                            : <div style={{ width: '50%', height: '500px', fontSize: '24px', background: 'white', display: 'flex', placeItems: 'center', justifyContent: 'center' }}>There is no data for odds</div>
+                    }
+                </div>
             </div >
             {loader &&
                 <div className='loader'>
