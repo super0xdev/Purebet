@@ -70,15 +70,17 @@ const BetHistory = () => {
         if (!fromVal || !toVal) return
         // const start = new Date(from).getTime() / 1000
         // const end = new Date(to).getTime() / 1000
-        const start = fromVal.valueOf() / 1000
-        const end = toVal.valueOf() / 1000
+        const ts = new Date(fromVal.year() + '-' + ("0" + (fromVal.month() + 1)).slice(-2) + '-' + ("0" + (fromVal.date() + 1)).slice(-2))
+        const start = ts.getTime() / 1000
+        const te = new Date(toVal.year() + '-' + ("0" + (toVal.month() + 1)).slice(-2) + '-' + ("0" + (toVal.date() + 1)).slice(-2))
+        const end = te.getTime() / 1000
         let minOdds = 999999, maxOdds = -999999;
         let leagueChart: any = []
         for (let i = start; i <= end; i += 86400) arr[cnt++] = 0
         for (let i = 0; i < data.length; i++) {
             const tmp = new Date(data[i].startDate * 1000)
             const date = new Date(tmp.getFullYear() + '-' + ("0" + (tmp.getMonth() + 1)).slice(-2) + '-' + ("0" + (tmp.getDate() + 1)).slice(-2))
-            const ind = (date.getTime() / 1000 - start - 61200) / 86400
+            const ind = (date.getTime() / 1000 - start) / 86400 + 1
             if (data[i].result == "loss") arr[ind - 1] += data[i].profitloss
             else {
                 const pro = data[i].profitloss.toString()
