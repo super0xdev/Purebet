@@ -86,7 +86,7 @@ const BetHistory = () => {
                 const pro = data[i].profitloss.toString()
                 arr[ind - 1] += parseFloat(pro.slice(1))
             }
-            if (data[i].league != undefined) {
+            if (data[i].league != undefined && data[i].event != 'event') {
                 let j = 0, flag = 0;
                 for (; j < leagueChart.length; j++)
                     if (leagueChart[j].league == data[i].league) break;
